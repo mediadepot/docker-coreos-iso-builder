@@ -26,6 +26,7 @@ WORKDIR /coreos-sdk
 
 RUN cd /coreos-sdk && \
     alias tar="tar --absolute-names" && \
+    mkdir -p /home/root/ && \
     /usr/bin/cork create
 
 RUN /usr/bin/cork enter && \
