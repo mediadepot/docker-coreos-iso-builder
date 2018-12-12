@@ -10,3 +10,5 @@ Docker container to help MediaDepot build a custom CoreOS kernel with additional
 # References
 - https://coreos.com/os/docs/latest/sdk-modifying-coreos.html
 - https://coreos.com/os/docs/latest/sdk-tips-and-tricks.html
+
+http://tdoc.info/en/blog/2014/04/02/coreos_sdk_image.html

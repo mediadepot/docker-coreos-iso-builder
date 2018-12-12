@@ -3,7 +3,7 @@ FROM debian:jessie-slim
 ## Prerequisites
 
 # meteor installer doesn't work with the default tar binary
-RUN apt-get update && \
+apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
@@ -12,7 +12,7 @@ RUN apt-get update && \
     bzip2 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN cd /usr/bin && \
+cd /usr/bin && \
     curl -L -o cork https://github.com/coreos/mantle/releases/download/v0.11.1/cork-0.11.1-amd64 && \
     chmod +x cork && \
     which cork && \
@@ -22,14 +22,13 @@ RUN cd /usr/bin && \
 ## Using Cork
 # https://coreos.com/os/docs/latest/sdk-modifying-coreos.html
 
-WORKDIR /coreos-sdk
+mkdir -p /coreos-sdk
 
-RUN cd /coreos-sdk && \
-    alias tar="tar --absolute-names" && \
+cd /coreos-sdk && \
     mkdir -p /home/root/ && \
     /usr/bin/cork create
 
-RUN /usr/bin/cork enter && \
+/usr/bin/cork enter && \
     grep NAME /etc/os-release # Verify you are in the SDK chroot
 
 ## Building an image
