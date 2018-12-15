@@ -10,7 +10,7 @@ yum install -y \
     bzip2
 
 cd /usr/bin && \
-    curl -L -o cork https://github.com/coreos/mantle/releases/download/v0.10.0/cork-0.10.0-amd64 && \
+    curl -L -o cork https://github.com/coreos/mantle/releases/download/v0.11.1/cork-0.11.1-amd64 && \
     chmod +x cork && \
     which cork
 
@@ -24,7 +24,7 @@ git config --global user.name "Jason Kulatunga"
 
 mkdir -p ~/coreos-sdk
 cd ~/coreos-sdk
-cork create --sdk-version 1911.4.0 --replace
+cork create --manifest-url=https://github.com/mediadepot/coreos-manifest.git --manifest-branch=mediadepot
 
 cork enter
 grep NAME /etc/os-release
