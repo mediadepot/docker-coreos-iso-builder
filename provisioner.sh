@@ -18,11 +18,11 @@ cd /usr/bin && \
 ## Using Cork
 # https://coreos.com/os/docs/latest/sdk-modifying-coreos.html=
 
-exec env GITHUB_RELEASE_REPO=${GITHUB_RELEASE_REPO} GITHUB_RELEASE_ID=${GITHUB_RELEASE_ID} GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN} sudo -u vagrant /bin/sh - << 'EOF'
+exec sudo -u vagrant GITHUB_RELEASE_REPO=${GITHUB_RELEASE_REPO} GITHUB_RELEASE_ID=${GITHUB_RELEASE_ID} GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN} /bin/sh - << 'EOF'
 set -e
 set -o pipefail
 whoami
-env
+
 git config --global user.email "jason@thesparktree.com" && \
 git config --global user.name "Jason Kulatunga"
 
@@ -33,10 +33,10 @@ cork create --manifest-url=https://github.com/mediadepot/coreos-manifest.git --m
 cork enter
 grep NAME /etc/os-release
 
-./set_shared_user_password.sh 12345
-./setup_board --board 'amd64-usr'
-./build_packages --board 'amd64-usr'
-./build_image --board 'amd64-usr'
+./set_shared_user_password.sh 12345 && \
+./setup_board --board 'amd64-usr' && \
+./build_packages --board 'amd64-usr' && \
+./build_image --board 'amd64-usr' && \
 ./image_to_vm.sh --from=../build/images/amd64-usr/developer-latest --format=iso --board=amd64-usr
 
 # Upload image to Github.
