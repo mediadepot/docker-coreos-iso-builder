@@ -10,8 +10,8 @@ Vagrant.configure("2") do |config|
 
 
     config.vm.provision "shell", path: "provisioner.sh", env: {
-        "GITHUB_RELEASE_REPO" => "mediadepot/vagrant-coreos-kernel-builder",
-        "GITHUB_RELEASE_ID" => "14555587",
-        "GITHUB_ACCESS_TOKEN" => ENV["GITHUB_ACCESS_TOKEN"]
+        "GCP_CREDENTIALS_GS_REFRESH_TOKEN" => ENV["GCP_CREDENTIALS_GS_REFRESH_TOKEN"],
+        "GCP_GSUTIL_PROJECT_ID" => "mediadepot",
+        "GCP_GSUTIL_BUCKET_ID" => "mediadepot-coreos"
     }
 end

@@ -18,7 +18,7 @@ cd /usr/bin && \
 ## Using Cork
 # https://coreos.com/os/docs/latest/sdk-modifying-coreos.html=
 
-exec sudo -u vagrant GITHUB_RELEASE_REPO=${GITHUB_RELEASE_REPO} GITHUB_RELEASE_ID=${GITHUB_RELEASE_ID} GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN} /bin/sh - << 'EOF'
+exec sudo -u vagrant GCP_CREDENTIALS_GS_REFRESH_TOKEN=${GCP_CREDENTIALS_GS_REFRESH_TOKEN} GCP_GSUTIL_PROJECT_ID=${GCP_GSUTIL_PROJECT_ID} GCP_GSUTIL_BUCKET_ID=${GCP_GSUTIL_BUCKET_ID} /bin/sh - << 'EOF'
 set -e
 set -o pipefail
 whoami
@@ -33,24 +33,32 @@ cork create --manifest-url=https://github.com/mediadepot/coreos-manifest.git --m
 cork enter
 grep NAME /etc/os-release
 
-./set_shared_user_password.sh 12345 && \
+# create the gsutil config file
+cat > /home/vagrant/.boto <<- GSUTIL_EOF
+[Credentials]
+gs_oauth2_refresh_token = ${GCP_CREDENTIALS_GS_REFRESH_TOKEN}
+[Boto]
+https_validate_certificates = True
+[GoogleCompute]
+[GSUtil]
+content_language = en
+default_api_version = 2
+default_project_id = ${GCP_GSUTIL_PROJECT_ID}
+[OAuth2]
+
+GSUTIL_EOF
+
+
+./set_shared_user_password.sh mediadepot && \
 ./setup_board --board 'amd64-usr' && \
 ./build_packages --board 'amd64-usr' && \
-./build_image --board 'amd64-usr' && \
-./image_to_vm.sh --from=../build/images/amd64-usr/developer-latest --format=iso --board=amd64-usr
+./build_image --board 'amd64-usr' prod --upload_root "gs://${GCP_GSUTIL_BUCKET_ID}" --upload && \
+./image_to_vm.sh --from=../build/images/amd64-usr/developer-latest --format=iso --board=amd64-usr --upload_root "gs://${GCP_GSUTIL_BUCKET_ID}" --upload && \
 
-# Upload image to Github.
-cd ../build/images/amd64-usr/developer-latest
-export $(cat version.txt | xargs)
-   #COREOS_VERSION=1911.4.0+2018-12-16-0438
-   #COREOS_VERSION_ID=1911.4.0
-   #COREOS_BUILD_ID="2018-12-16-0438"
-   #COREOS_SDK_VERSION=1911.3.0
+# mark this current build as the latest.
+gsutil cp ../build/images/amd64-usr/developer-latest/version.txt "gs://${GCP_GSUTIL_BUCKET_ID}/boards/amd64-usr/current/version.txt"
 
-
-echo "curl 'https://uploads.github.com/repos/${GITHUB_RELEASE_REPO}/releases/${GITHUB_RELEASE_ID}/assets?access_token=${GITHUB_ACCESS_TOKEN}&name=coreos_production_iso_image_${COREOS_VERSION_ID}_${COREOS_BUILD_ID}.iso' --header 'Content-Type: application/zip' --upload-file coreos_production_iso_image.iso -X POST"
-curl 'https://uploads.github.com/repos/${GITHUB_RELEASE_REPO}/releases/${GITHUB_RELEASE_ID}/assets?access_token=${GITHUB_ACCESS_TOKEN}&name=coreos_production_iso_image_${COREOS_VERSION_ID}_${COREOS_BUILD_ID}.iso' --header 'Content-Type: application/zip' --upload-file coreos_production_iso_image.iso -X POST
-
+cat ../build/images/amd64-usr/developer-latest/version.txt
 EOF
 
 
