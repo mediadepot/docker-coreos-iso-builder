@@ -38,11 +38,11 @@ cat /home/vagrant/.boto
 ./set_shared_user_password.sh mediadepot && \
 ./setup_board --board 'amd64-usr' && \
 ./build_packages --board 'amd64-usr' && \
-./build_image --board 'amd64-usr' prod --upload_root "gs://${GCP_GSUTIL_BUCKET_ID}" --upload && \
-./image_to_vm.sh --from=../build/images/amd64-usr/developer-latest --format=iso --board=amd64-usr --upload_root "gs://${GCP_GSUTIL_BUCKET_ID}" --upload && \
+./build_image --board 'amd64-usr' prod --upload_root "gs://mediadepot-coreos" --upload && \
+./image_to_vm.sh --from=../build/images/amd64-usr/developer-latest --format=iso --board=amd64-usr --upload_root "gs://mediadepot-coreos" --upload && \
 
 # mark this current build as the latest.
-gsutil cp ../build/images/amd64-usr/developer-latest/version.txt "gs://${GCP_GSUTIL_BUCKET_ID}/boards/amd64-usr/current/version.txt"
+gsutil cp ../build/images/amd64-usr/developer-latest/version.txt "gs://mediadepot-coreos/boards/amd64-usr/current/version.txt"
 
 cat ../build/images/amd64-usr/developer-latest/version.txt
 EOF
