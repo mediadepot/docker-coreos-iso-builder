@@ -18,7 +18,7 @@ cd /usr/bin && \
 ## Using Cork
 # https://coreos.com/os/docs/latest/sdk-modifying-coreos.html=
 
-exec sudo -u vagrant GCP_CREDENTIALS_GS_REFRESH_TOKEN=${GCP_CREDENTIALS_GS_REFRESH_TOKEN} GCP_GSUTIL_PROJECT_ID=${GCP_GSUTIL_PROJECT_ID} GCP_GSUTIL_BUCKET_ID=${GCP_GSUTIL_BUCKET_ID} /bin/sh - << 'EOF'
+exec sudo -u vagrant GCP_GSUTIL_BUCKET_ID=${GCP_GSUTIL_BUCKET_ID} /bin/sh - << 'EOF'
 set -e
 set -o pipefail
 whoami
@@ -29,25 +29,11 @@ git config --global user.name "Jason Kulatunga"
 mkdir -p ~/coreos-sdk
 cd ~/coreos-sdk
 cork create --manifest-url=https://github.com/mediadepot/coreos-manifest.git --manifest-branch=mediadepot
-
+#
 cork enter
 grep NAME /etc/os-release
-
-# create the gsutil config file
-cat > /home/vagrant/.boto <<- GSUTIL_EOF
-[Credentials]
-gs_oauth2_refresh_token = ${GCP_CREDENTIALS_GS_REFRESH_TOKEN}
-[Boto]
-https_validate_certificates = True
-[GoogleCompute]
-[GSUtil]
-content_language = en
-default_api_version = 2
-default_project_id = ${GCP_GSUTIL_PROJECT_ID}
-[OAuth2]
-
-GSUTIL_EOF
-
+env
+cat /home/vagrant/.boto
 
 ./set_shared_user_password.sh mediadepot && \
 ./setup_board --board 'amd64-usr' && \
