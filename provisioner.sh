@@ -3,7 +3,6 @@ set -e
 set -o pipefail
 ## Prerequisites
 
-# meteor installer doesn't work with the default tar binary
 yum install -y \
     ca-certificates \
     curl \
@@ -18,7 +17,7 @@ cd /usr/bin && \
 ## Using Cork
 # https://coreos.com/os/docs/latest/sdk-modifying-coreos.html=
 
-exec sudo -u vagrant GCP_GSUTIL_BUCKET_ID=${GCP_GSUTIL_BUCKET_ID} /bin/sh - << 'EOF'
+exec sudo -u vagrant /bin/sh - << 'EOF'
 set -e
 set -o pipefail
 whoami
@@ -33,7 +32,6 @@ cork create --manifest-url=https://github.com/mediadepot/coreos-manifest.git --m
 cork enter
 grep NAME /etc/os-release
 env
-cat /home/vagrant/.boto
 
 ./set_shared_user_password.sh mediadepot && \
 ./setup_board --board 'amd64-usr' && \
