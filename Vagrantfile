@@ -4,8 +4,8 @@ Vagrant.configure("2") do |config|
 
     config.vm.provider "virtualbox" do |v|
         v.name = "coreos_builder"
-        v.memory = 11264
-        v.cpus = 4
+        v.memory = 16384
+        v.cpus = 6
     end
 
     # # create the gsutil config file. Make sure it is created outside of the CHROOT (before cork create). It'll be parsed and a .boto file will be created in the chroot.
